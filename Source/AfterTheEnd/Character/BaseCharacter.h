@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -54,21 +55,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* JumpAction;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* SwitchCameraAction;
-
+	UInputAction* CrouchAction;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* LookAroundAction;
+	UInputAction* AttackAction;
+    	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction;
 
 	void MoveTriggered(const FInputActionValue& InputValue);
 	void LookTriggered(const FInputActionValue& InputValue);
+
+	void ToggleCrouch(const FInputActionValue& InputValue);
 	
-	void SwitchCameraTriggered();
-
-	void LookAroundStarted();
-	void LookAroundCompleted();
-
-private:
-	TWeakObjectPtr<UCameraComponent> CurrentCamera;
+	void AttackTriggered();
+	void InteractTriggered();
 };

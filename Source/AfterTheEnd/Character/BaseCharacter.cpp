@@ -2,7 +2,6 @@
 
 
 #include "BaseCharacter.h"
-
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
@@ -39,8 +38,6 @@ void ABaseCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	CurrentCamera = MakeWeakObjectPtr(FirstPersonCamera);
 }
 
 // Called to bind functionality to input
@@ -55,11 +52,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &ACharacter::StopJumping);
-		
-		EnhancedInputComponent->BindAction(SwitchCameraAction, ETriggerEvent::Started, this, &ABaseCharacter::SwitchCameraTriggered);
 
-		EnhancedInputComponent->BindAction(LookAroundAction, ETriggerEvent::Started, this, &ABaseCharacter::LookAroundStarted);
-		EnhancedInputComponent->BindAction(LookAroundAction, ETriggerEvent::Completed, this, &ABaseCharacter::LookAroundCompleted);
+		EnhancedInputComponent
 	}
 }
 
@@ -79,29 +73,17 @@ void ABaseCharacter::LookTriggered(const FInputActionValue& InputValue)
 	AddControllerPitchInput(Value.Y);
 }
 
-void ABaseCharacter::SwitchCameraTriggered()
+void ABaseCharacter::ToggleCrouch(const FInputActionValue& InputValue)
 {
 	
-	if(CurrentCamera.Get() == FirstPersonCamera)
-	{
-		FirstPersonCamera->SetActive(false);
-		ThirdPersonCamera->SetActive(true);
-		CurrentCamera = ThirdPersonCamera;
-	}
-	else
-	{
-		FirstPersonCamera->SetActive(true);
-		ThirdPersonCamera->SetActive(false);
-		CurrentCamera = FirstPersonCamera;
-	}
 }
 
-void ABaseCharacter::LookAroundStarted()
+void ABaseCharacter::AttackTriggered()
 {
-	bUseControllerRotationYaw = false;
+	
 }
 
-void ABaseCharacter::LookAroundCompleted()
+void ABaseCharacter::InteractTriggered()
 {
-	bUseControllerRotationYaw = true;
+	
 }
