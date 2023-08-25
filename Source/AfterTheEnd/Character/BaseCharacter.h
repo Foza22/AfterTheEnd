@@ -68,8 +68,9 @@ protected:
 	void MoveTriggered(const FInputActionValue& InputValue);
 	void LookTriggered(const FInputActionValue& InputValue);
 
-	void ToggleCrouch(const FInputActionValue& InputValue);
+	void CrouchStarted();
+	void CrouchCompleted();
 	
-	void AttackTriggered();
-	void InteractTriggered();
+	void AttackStarted();
+	void InteractStarted();
 };
