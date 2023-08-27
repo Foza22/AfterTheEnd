@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "AfterTheEnd/Components/InteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -80,8 +81,12 @@ void ABaseCharacter::MoveTriggered(const FInputActionValue& InputValue)
 {
 	const FVector2D Value = InputValue.Get<FVector2D>();
 
-	AddMovementInput(GetActorForwardVector(), Value.Y);
-	AddMovementInput(GetActorRightVector(), Value.X);
+	FRotator ControlRotation = GetControlRotation();
+	FVector ForwardVector = UKismetMathLibrary::GetForwardVector({0.f,ControlRotation.Yaw,0.f});
+	FVector RightVector = UKismetMathLibrary::GetRightVector({0.f, ControlRotation.Yaw, ControlRotation.Roll});
+
+	AddMovementInput(ForwardVector, Value.Y);
+	AddMovementInput(RightVector, Value.X);
 }
 
 void ABaseCharacter::LookTriggered(const FInputActionValue& InputValue)
