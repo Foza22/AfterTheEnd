@@ -22,12 +22,12 @@ ABaseCharacter::ABaseCharacter()
 
 	ThirdPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
 	ThirdPersonCamera->SetupAttachment(SpringArmComponent);
-	ThirdPersonCamera->SetActive(false);
+	ThirdPersonCamera->SetActive(true);
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 	                                     FName("head"));
-	FirstPersonCamera->SetActive(true);
+	FirstPersonCamera->SetActive(false);
 
 	bUseControllerRotationYaw = true;
 }
@@ -46,7 +46,7 @@ void ABaseCharacter::BeginPlay()
 		}
 	}
 
-	CurrentCamera = MakeWeakObjectPtr(FirstPersonCamera);
+	CurrentCamera = MakeWeakObjectPtr(ThirdPersonCamera);
 }
 
 // Called to bind functionality to input

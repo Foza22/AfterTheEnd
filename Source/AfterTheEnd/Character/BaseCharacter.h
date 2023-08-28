@@ -99,6 +99,7 @@ protected:
 	void ZoomCameraTriggered(const FInputActionValue& InputValue);
 
 private:
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	TWeakObjectPtr<UCameraComponent> CurrentCamera;
 
 	void ActivateFirstPersonCamera();
