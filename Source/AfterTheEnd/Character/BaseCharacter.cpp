@@ -17,19 +17,15 @@ ABaseCharacter::ABaseCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
-	SpringArmComponent->SetupAttachment(RootComponent);
-
-	ThirdPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonCamera"));
-	ThirdPersonCamera->SetupAttachment(SpringArmComponent);
-	ThirdPersonCamera->SetActive(true);
-
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-	                                     FName("head"));
-	FirstPersonCamera->SetActive(false);
+	FirstPersonCamera->SetupAttachment(RootComponent);
+
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
+	FirstPersonMesh->SetupAttachment(FirstPersonCamera);
 
 	bUseControllerRotationYaw = true;
+
+	GetMesh()->SetOwnerNoSee(true);
 }
 
 // Called when the game starts or when spawned
@@ -45,8 +41,6 @@ void ABaseCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	CurrentCamera = MakeWeakObjectPtr(ThirdPersonCamera);
 }
 
 // Called to bind functionality to input
@@ -69,11 +63,6 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ABaseCharacter::AttackStarted);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this,
 		                                   &ABaseCharacter::InteractStarted);
-
-		EnhancedInputComponent->BindAction(SwitchCameraAction, ETriggerEvent::Started, this,
-		                                   &ABaseCharacter::SwitchCameraStarted);
-		EnhancedInputComponent->BindAction(ZoomCameraAction, ETriggerEvent::Triggered, this,
-		                                   &ABaseCharacter::ZoomCameraTriggered);
 	}
 }
 
@@ -124,8 +113,8 @@ void ABaseCharacter::AttackStarted()
 void ABaseCharacter::InteractStarted()
 {
 	// Move to GA later
-	const FVector TraceStart = CurrentCamera->GetComponentLocation();
-	const FVector TraceEnd = CurrentCamera->GetComponentLocation() + CurrentCamera->GetForwardVector() *
+	const FVector TraceStart = FirstPersonCamera->GetComponentLocation();
+	const FVector TraceEnd = FirstPersonCamera->GetComponentLocation() + FirstPersonCamera->GetForwardVector() *
 		InteractionDistance;
 
 	FHitResult HitResult;
@@ -139,51 +128,5 @@ void ABaseCharacter::InteractStarted()
 		{
 			InteractionComponent->Interact(this);
 		}
-	}
-}
-
-void ABaseCharacter::SwitchCameraStarted()
-{
-	if (CurrentCamera.Get() == FirstPersonCamera)
-	{
-		ActivateThirdPersonCamera();
-	}
-	else
-	{
-		ActivateFirstPersonCamera();
-	}
-
-	SpringArmComponent->TargetArmLength = MinCameraDistance;
-}
-
-void ABaseCharacter::ActivateFirstPersonCamera()
-{
-	FirstPersonCamera->SetActive(true);
-	ThirdPersonCamera->SetActive(false);
-	CurrentCamera = MakeWeakObjectPtr(FirstPersonCamera);
-}
-
-void ABaseCharacter::ActivateThirdPersonCamera()
-{
-	FirstPersonCamera->SetActive(false);
-	ThirdPersonCamera->SetActive(true);
-	CurrentCamera = MakeWeakObjectPtr(ThirdPersonCamera);
-}
-
-void ABaseCharacter::ZoomCameraTriggered(const FInputActionValue& InputValue)
-{
-	const float Value = InputValue.Get<float>();
-
-	SpringArmComponent->TargetArmLength += Value * CameraZoomRate;
-	SpringArmComponent->TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength, 0,
-	                                                   MaxCameraDistance);
-
-	if (CurrentCamera.Get() == ThirdPersonCamera && SpringArmComponent->TargetArmLength <= MinCameraDistance)
-	{
-		SwitchCameraStarted();
-	}
-	else if (CurrentCamera.Get() == FirstPersonCamera && SpringArmComponent->TargetArmLength >= MinCameraDistance)
-	{
-		SwitchCameraStarted();
 	}
 }

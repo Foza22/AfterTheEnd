@@ -33,22 +33,13 @@ protected:
 	 * CAMERA
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Camera)
-	USpringArmComponent* SpringArmComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Camera)
 	UCameraComponent* FirstPersonCamera;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Camera)
-	UCameraComponent* ThirdPersonCamera;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Camera)
-	float MinCameraDistance = 100.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Camera)
-	float MaxCameraDistance = 500.f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Camera)
-	float CameraZoomRate = 10.f;
+	/*
+	 * MESH
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh)
+	TObjectPtr<USkeletalMeshComponent> FirstPersonMesh;
 
 	/*
 	 * INTERACTION
@@ -79,12 +70,6 @@ protected:
     	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* InteractAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-    UInputAction* SwitchCameraAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* ZoomCameraAction;
 
 	void MoveTriggered(const FInputActionValue& InputValue);
 	void LookTriggered(const FInputActionValue& InputValue);
@@ -94,14 +79,4 @@ protected:
 	
 	void AttackStarted();
 	void InteractStarted();
-
-	void SwitchCameraStarted();
-	void ZoomCameraTriggered(const FInputActionValue& InputValue);
-
-private:
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	TWeakObjectPtr<UCameraComponent> CurrentCamera;
-
-	void ActivateFirstPersonCamera();
-	void ActivateThirdPersonCamera();
 };
